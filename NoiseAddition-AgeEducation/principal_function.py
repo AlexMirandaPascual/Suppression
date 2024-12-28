@@ -1,6 +1,6 @@
 from  graphic_generator import *
 def generateFileandGraphAge():
-    filedistanceL2()
+    generate_distances()
     generate_files_m_M()
     generate_supression_file(numberofrepeat=100)
     agregateLaplaceandGaussian()
