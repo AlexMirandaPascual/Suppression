@@ -15,8 +15,8 @@ def generateFileandGraphMelon():
     filedistanceL2(name_fruit="Melon")
     generate_files_m_M(path_average_distances="Melondistances.csv", path_of_file = "Files m and M\\Melon\\")
     generate_supression_file(path_m_M = "Files m and M\\Melon\\", fruit_name="Melon", numberofrepeat=100)
-    agregateLaplaceandGaussian(file="Melon_onlysupression.csv", upper_weight= 2000, lower_weight= 1000, upper_volume= 300, lower_volume= 100)
-    agregatefileoriginalPrima(fruit_name = "Melon", upper_weight=2000, lower_weight= 1000, upper_volume=300, lower_volume=100)
+    agregateLaplaceandGaussian(file="Melon_onlysupression.csv", upper_weight= 2000, lower_weight= 1000, upper_volume= 300, lower_volume= 100, real_weight=1500, real_volume=200)
+    agregatefileoriginalPrima(fruit_name = "Melon", upper_weight=2000, lower_weight= 1000, upper_volume=300, lower_volume=100, real_weight=1500, real_volume=200 )
     calculateAverageofelement(file="File_graphic\\Melon_onlysupression.csv", File_name="File_graphic\\AverageMelon.csv")
     combining_averages(path_average_supression="File_graphic\\AverageMelon.csv", path_average_prima="File_graphic\\originalMelon prima.csv",
                        file="File_graphic\\CombiningMelon.csv", real_weight=1500, real_volume=200)
@@ -26,8 +26,8 @@ def generateFileandGraphStrawberry():
     filedistanceL2(name_fruit="Strawberry")
     generate_files_m_M(path_average_distances="Strawberrydistances.csv", path_of_file = "Files m and M\\Strawberry\\")
     generate_supression_file(path_m_M = "Files m and M\\Strawberry\\", fruit_name="Strawberry", numberofrepeat=100)
-    agregateLaplaceandGaussian(file="Strawberry_onlysupression.csv", upper_weight= 45, lower_weight= 20, upper_volume= 30, lower_volume= 5)
-    agregatefileoriginalPrima(fruit_name = "Strawberry", upper_weight=45, lower_weight= 20, upper_volume=30, lower_volume=5)
+    agregateLaplaceandGaussian(file="Strawberry_onlysupression.csv", upper_weight= 45, lower_weight= 20, upper_volume= 30, lower_volume= 5, real_weight=30, real_volume=20)
+    agregatefileoriginalPrima(fruit_name = "Strawberry", upper_weight=45, lower_weight= 20, upper_volume=30, lower_volume=5, real_weight=30, real_volume=20)
     calculateAverageofelement(file="File_graphic\\Strawberry_onlysupression.csv", File_name="File_graphic\\AverageStrawberry.csv")
     combining_averages(path_average_supression="File_graphic\\AverageStrawberry.csv", path_average_prima="File_graphic\\originalStrawberry prima.csv",
                        file="File_graphic\\CombiningStrawberry.csv", real_weight=30, real_volume=20)
@@ -37,16 +37,14 @@ def generateFileandGraphPear():
     filedistanceL2(name_fruit="Pear")
     generate_files_m_M(path_average_distances="Peardistances.csv", path_of_file = "Files m and M\\Pear\\")
     generate_supression_file(path_m_M = "Files m and M\\Pear\\", fruit_name="Pear", numberofrepeat=100)
-    agregateLaplaceandGaussian(file="Pear_onlysupression.csv", upper_weight= 200, lower_weight= 90, upper_volume= 160, lower_volume= 80)
-    agregatefileoriginalPrima(fruit_name = "Pear", upper_weight=200, lower_weight= 90, upper_volume=160, lower_volume=80)
+    agregateLaplaceandGaussian(file="Pear_onlysupression.csv", upper_weight= 200, lower_weight= 90, upper_volume= 160, lower_volume= 80, real_weight=140, real_volume=120)
+    agregatefileoriginalPrima(fruit_name = "Pear", upper_weight=200, lower_weight= 90, upper_volume=160, lower_volume=80, real_weight=140, real_volume=120)
     calculateAverageofelement(file="File_graphic\\Pear_onlysupression.csv", File_name="File_graphic\\AveragePear.csv")
     combining_averages(path_average_supression="File_graphic\\AveragePear.csv", path_average_prima="File_graphic\\originalPear prima.csv",
                        file="File_graphic\\CombiningPear.csv", real_weight=140, real_volume=120)
     generate3DmetricAverages(path = "File_graphic\\CombiningPear.csv", metric="laplacian")
     generate3DmetricAverages(path = "File_graphic\\CombiningPear.csv", metric="gaussian")
-# generateFileandGraphMelon()
-# generateFileandGraphPear()
-# generateFileandGraphStrawberry()
+
 
 
 
