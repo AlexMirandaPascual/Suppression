@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def filedistanceL2(filename="irishn_train.csv", column="Age"):
+def generate_distances(filename="irishn_train.csv", column="Age"):
     # Normalize Age vector
     df=pd.read_csv(filename)
     Element=df[column]
