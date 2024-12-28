@@ -1,87 +1,8 @@
-import cv2
+
 import numpy as np
-import tensorflow as tf
 import pandas as pd
 import os
 import re
-# train, test = tf.keras.datasets.mnist.load_data()
-# train_data, train_labels = train
-# test_data, test_labels = test
-
-# train_data = train_data.astype('float32') / 255
-# test_data = test_data.astype('float32')/ 255
-
-# train_data[1]
-
-#imagen en escalas de grises
-
-# def probabilitic(m, M, imagen, datasets):
-#     """Calcula la probabilidad dado una cota m y M """
-#     Suma_total=0
-#     caracteristicas=np.shape(imagen)
-#     total_pixels=caracteristicas[0]*caracteristicas[1]
-#     img_norm = imagen.astype('float32') / 255
-#     datasets_norm = datasets.astype('float32') / 255
-#     for i in range(len(datasets)): #esto es si no incluyo la imagen
-#         dist=cv2.norm(img_norm , datasets_norm[i], cv2.NORM_L1)/total_pixels
-#         Suma_total= Suma_total+dist
-#     promedio=Suma_total/(len(datasets))
-#     p=m+(M-m)*promedio
-#     probabilidad=1-p
-#     return probabilidad
-
-
-# def prob_dataset(probabilitic, dataset):
-#     """"Dado un dataset lo reduce segun una probabilidad dada de que escoja 
-#     o no cada elemento probabilitic y datyaset deben ser dataframe"""
-#     # if probabilitic<0 or probabilitic>1:
-#     #     return "La probabilidad debe estar entre 0 y 1"
-#     new_dataset=[]
-#     for i in range(len(dataset)):
-#         x=np.random.random(1)
-#         if (x<=probabilitic.iloc[i, 0]):
-#             new_dataset.append(dataset[i])
-#     df=pd.DataFrame(new_dataset)
-#     return df
-
-# def prob_dataset_with_label(probabilitic, dataset, dataset_label):
-#     """"Dado un dataset lo reduce segun una probabilidad dada de que escoja o no cada elemento"""
-#     if probabilitic<0 or probabilitic>1:
-#         return "La probabilidad debe estar entre 0 y 1"
-#     new_dataset=[]
-#     new_dataset_label=[]
-
-#     for i in range(len(dataset)):
-#         x=np.random.random(1)
-#         if (x<=probabilitic):
-#             new_dataset.append(dataset[i])
-#             new_dataset_label.append(dataset_label[i])
-#     return new_dataset, new_dataset_label
-
-#Esto es para escoger el epsilon correcto y hacer la diferencia
-
-#Hacerlo funcion
-def acurracy_difference_onefile(path_compare_patron, file, delta, eps, delta_tolerance, eps_tolerance):
-    """Calculate the difference between acurracy_max and acurracy_max in one file of the patron in this case is abadi"""
-    # path_compare_patron="delta05abadi_Alex.csv"
-    # file= "grafico.csv"
-    df=pd.read_csv(file)
-    patron=pd.read_csv(path_compare_patron)
-    acurracy_patron=patron[(patron["eps"]<=eps+eps_tolerance) & (patron["eps"]>=eps-eps_tolerance) 
-                           & (patron["delta"]<=delta+delta_tolerance) & (patron["delta"]>=delta+delta_tolerance)]
-
-    df["acurracy_difference"]=df["acurracy_max"]-float(acurracy_patron["acurracy_max"])
-    df.to_csv(file, index=False)
-
-def acurracy_difference(path_of_patron, path_of_carpet):
-    """Calculate the difference between acurracy_max and acurracy_max of the patron in this case is abadi"""
-    patron=pd.read_csv(path_of_patron)
-    list_carpet=os.listdir(path_of_carpet)
-    for i in range(len(list_carpet)):
-        df=pd.read_csv(path_of_carpet + "\\" + list_carpet[i])
-        df["acurracy_difference"]=df["acurracy_max"]-patron["acurracy_max"]
-        df.to_csv(path_of_carpet + "\\" + list_carpet[i], index=False)
-
 
 def extract_m_and_MofPath(path): 
     numbers=[]
@@ -110,6 +31,7 @@ def deleted_element0_of_path(path):
         deleted_element_0(path_file)
 
 def join_csv_of_carpet(path_of_carpet, path_of_archive):
+    "This function joins all the CSVs in a folder into one, to make it easier to get your work done with pandas"
     list_dir=os.listdir(path_of_carpet)
     df_probe=pd.read_csv(path_of_carpet + "\\" + list_dir[0])
     list_columns=list(df_probe.columns)
@@ -120,7 +42,7 @@ def join_csv_of_carpet(path_of_carpet, path_of_archive):
     df.to_csv(path_of_archive, index=None)
 
 
-def generar_cvs_probabilidad(m, M, path_distances, path_probabilidades):
+def generate_probabilities_cvs(m, M, path_distances, path_probabilidades):
     df=pd.read_csv(path_distances)
     name= "probabilities m=" + str(m)+ " M=" +str(M)
     df.columns=[name]

@@ -36,8 +36,8 @@ def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", pat
     totalelement=file_original[column_name].size
     delta=np.power((1/totalelement), 2)
 
-    sumtotal_laplacian=sumtotal+F1(epsilon1=epsilon/2, sensitivity=sensitivitySummation(upper, lower))
-    totalelement_laplacian=totalelement +F1(epsilon1=epsilon/2, sensitivity=1)
+    sumtotal_laplacian=sumtotal+Laplacian(epsilon1=epsilon/2, sensitivity=sensitivitySummation(upper, lower))
+    totalelement_laplacian=totalelement +Laplacian(epsilon1=epsilon/2, sensitivity=1)
     average_laplacian_original=sumtotal_laplacian/totalelement_laplacian
     
     sumtotal_gaussian=sumtotal+ Gaussian_p(delta=delta, epsilon=epsilon/2, sensitivity=sensitivitySummation(upper, lower)) 

@@ -25,5 +25,3 @@ def generateFileandGraphHighestEducationCompleted():
     generate3DmetricAverages(path="File_graphic\\CombiningHighestEducationCompleted.csv", metric="gaussian")
     generate3DmetricAverages(path="File_graphic\\CombiningHighestEducationCompleted.csv", metric="laplacian")
 
-# generateFileandGraphAge()
-# generateFileandGraphHighestEducationCompleted()
