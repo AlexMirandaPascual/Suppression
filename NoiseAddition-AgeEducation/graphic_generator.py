@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from  function_dp import *
+from  suppression_algorithm import *
 def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_supression="File_graphic\\Age_onlysupression 1repeat.csv", column_name="Age"):
     df = pd.read_csv(path_with_supression)
     file_original = pd.read_csv(original_path)
@@ -26,7 +26,7 @@ def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_s
     # ax.set_box_aspect((3,3,4))
     plt.show()
 
-def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", path_with_supression="File_graphic\\AverageAge.csv", column_name="Age", column_average="average_laplacian", epsilon=1, upper=100, lower=0):
+def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", path_with_supression="File_graphic\\AverageAge.csv", column_name="Age", column_average="average_laplace", epsilon=1, upper=100, lower=0):
     df = pd.read_csv(path_with_supression)
     file_original = pd.read_csv(original_path)
     
@@ -36,19 +36,19 @@ def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", pat
     totalelement=file_original[column_name].size
     delta=np.power((1/totalelement), 2)
 
-    sumtotal_laplacian=sumtotal+Laplacian(epsilon1=epsilon/2, sensitivity=sensitivitySummation(upper, lower))
-    totalelement_laplacian=totalelement +Laplacian(epsilon1=epsilon/2, sensitivity=1)
-    average_laplacian_original=sumtotal_laplacian/totalelement_laplacian
+    sumtotal_laplace=sumtotal+Laplace_noise(epsilon1=epsilon/2, sensitivity=sensitivitySummation(upper, lower))
+    totalelement_laplacian=totalelement +Laplace_noise(epsilon1=epsilon/2, sensitivity=1)
+    average_laplacian_original=sumtotal_laplace/totalelement_laplacian
     
-    sumtotal_gaussian=sumtotal+ Gaussian_p(delta=delta, epsilon=epsilon/2, sensitivity=sensitivitySummation(upper, lower)) 
-    totalelement_gaussian=totalelement + Gaussian_p(delta=delta, epsilon=epsilon/2, sensitivity=1)
+    sumtotal_gaussian=sumtotal+ Gaussian_noise(delta=delta, epsilon=epsilon/2, sensitivity=sensitivitySummation(upper, lower)) 
+    totalelement_gaussian=totalelement + Gaussian_noise(delta=delta, epsilon=epsilon/2, sensitivity=1)
     average_gaussian_original=sumtotal_gaussian/totalelement_gaussian
     
    
-    #Choose among average, guassian average and laplacian average
-    if (column_average.find("average_laplacian")==-1) and  (column_average.find("average_gaussian")==-1):
+    #Choose among average, guassian average and Laplace_noise average
+    if (column_average.find("average_laplace")==-1) and  (column_average.find("average_gaussian")==-1):
         df["accuracy_difference"]=np.abs(df[column_average]-float(average_original))
-    elif (column_average.find("average_laplacian")!=-1):
+    elif (column_average.find("average_laplace")!=-1):
         df["accuracy_difference"]=np.abs(df[column_average]-float(average_laplacian_original))
     elif (column_average.find("average_gaussian")!=-1):
         df["accuracy_difference"]=np.abs(df[column_average]-float(average_gaussian_original))
@@ -70,16 +70,16 @@ def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", pat
     # ax.set_box_aspect((3,3,4))
     plt.show()
 
-def generate3DmetricAverages(path="File_graphic\\CombiningAge.csv" , metric="laplacian"):
+def generate3DmetricAverages(path="File_graphic\\CombiningAge.csv" , metric="Laplace_noise"):
     df = pd.read_csv(path)
-    if metric=="laplacian":
+    if metric=="Laplace_noise":
         m=df["m"]
         M=df["M"]
         x=m
         y=M
         z=df["metric_laplacian"]
     elif metric=="gaussian":
-        df_gaussian=df[df["epsilon prima"]<2]
+        df_gaussian=df[df["epsilon suppression"]<2]
         print (df_gaussian)
         m=df_gaussian["m"]
         M=df_gaussian["M"]
@@ -103,10 +103,10 @@ def generate3DmetricAverages(path="File_graphic\\CombiningAge.csv" , metric="lap
 
 
 # generate3DoriginalvsSuprresionAverages(column_average="average")
-# generate3DoriginalvsSuprresionAverages(column_average="average_laplacian")
+# generate3DoriginalvsSuprresionAverages(column_average="average_laplace")
 # generate3DoriginalvsSuprresionAverages(column_average="average_gaussian")
 
 
 #prueba
 # generate3DmetricAverages(path="File_graphic\\CombiningHighestEducationCompleted.csv", metric="gaussian")
-# generate3DmetricAverages(path="File_graphic\\CombiningHighestEducationCompleted.csv", metric="laplacian")
+# generate3DmetricAverages(path="File_graphic\\CombiningHighestEducationCompleted.csv", metric="Laplace_noise")

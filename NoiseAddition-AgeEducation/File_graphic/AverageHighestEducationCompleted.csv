@@ -1,4 +1,4 @@
-m,M,original average,difference_laplacian_supression,difference_gaussian_supression
+m,M,original average,difference_laplace_supression,difference_gaussian_supression
 0.1,0.9,4.165871658716588,0.0103407560966627,0.0111834495088688
 0.1,0.8,4.165871658716588,0.0085595176958165,0.0089982692741878
 0.1,0.7,4.165871658716588,0.0064142347393207,0.007016305792388

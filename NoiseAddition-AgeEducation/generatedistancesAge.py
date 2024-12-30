@@ -1,4 +1,4 @@
 from principal_function import *
 
-generate_distances()
+generate_average_distance_list()
 

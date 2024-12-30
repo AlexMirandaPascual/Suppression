@@ -1,4 +1,4 @@
 from principal_function import *
 
-generate_distances(filename="irishn_train.csv", column="HighestEducationCompleted")
+generate_average_distance_list(filename="irishn_train.csv", column="HighestEducationCompleted")
 

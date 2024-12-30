@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def generate_distances(filename="irishn_train.csv", column="Age"):
+def generate_average_distance_list(filename="irishn_train.csv", column="Age"):
     # Normalize Age vector
     df=pd.read_csv(filename)
     Element=df[column]
