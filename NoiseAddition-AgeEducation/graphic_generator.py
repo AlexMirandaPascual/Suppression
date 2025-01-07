@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from  suppression_algorithm import *
-def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_supression="File_graphic\\Age_onlysupression 1repeat.csv", column_name="Age"):
+def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_supression="File_graphic\\Age_base 1repeat.csv", column_name="Age"):
     df = pd.read_csv(path_with_supression)
     file_original = pd.read_csv(original_path)
     average_original=file_original[column_name].mean()
@@ -79,7 +79,7 @@ def generate3DmetricAverages(path="File_graphic\\CombiningAge.csv" , metric="Lap
         y=M
         z=df["metric_laplacian"]
     elif metric=="gaussian":
-        df_gaussian=df[df["epsilon suppression"]<2]
+        df_gaussian=df[df["epsilon_suppression"]<2]
         print (df_gaussian)
         m=df_gaussian["m"]
         M=df_gaussian["M"]

@@ -53,12 +53,12 @@ def generate_files_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
         for j in range(length):
             if m[length-j-1]>=m[i]:
                 #print("m[j]= ", m[length-j-1])
-                name_file= path_of_file +"file m=" + str(0.9+m[i]/10) + " M=" + str(0.9+m[length-j-1]/10) + ".csv"
-                generate_probabilities_csv(m=0.9+m[i]/10,M=0.9+m[length-j-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)
+                name_file= path_of_file +"file m=" + str(m[i]/10) + " M=" + str(m[length-j-1]/10) + ".csv"
+                generate_probabilities_csv(m=m[i]/10,M=m[length-j-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)
             else:
                 break
-    name_file= path_of_file +"file m=" + str(0.9+m[-1]/10) + " M=" + str(0.9+m[-1]/10) + ".csv"
-    generate_probabilities_csv(m=0.9+m[-1]/10, M=0.9+m[-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)        
+    name_file= path_of_file +"file m=" + str(m[-1]/10) + " M=" + str(m[-1]/10) + ".csv"
+    generate_probabilities_csv(m=m[-1]/10, M=m[-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)        
 #End of generate_files_m_M 
 
 def generate_list_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])-> list:
@@ -81,10 +81,10 @@ def generate_list_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])-> l
         #print("m[i]= ", m[i] )
         for j in range(length):
             if m[length-j-1]>=m[i]:
-                m_and_M.append([0.9+m[i]/10,0.9+m[length-j-1]/10])
+                m_and_M.append([m[i]/10,m[length-j-1]/10])
             else:
                 break
-    m_and_M.append([0.9+m[-1]/10,0.9+m[-1]/10]) #Append m=M=last element of list
+    m_and_M.append([m[-1]/10,m[-1]/10]) #Append m=M=last element of list
     return m_and_M
 
 def suppressed_dataset(probabilities, dataset, column_name):
@@ -169,16 +169,18 @@ def MoS_Laplace_and_Gaussian(file="Age_base.csv", upper=100, lower=0, epsilon=1,
         average_gaussian_list.append(average_gaussian)
         difference_gaussian_list.append(difference_gaussian_supression)
 
-    file.replace(".csv","")
+    file_mod=file.replace(".csv"," ")
+    new_file_to_replace = folder + file_mod + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS.csv"
     df["average_laplace"]=average_laplace_list
     df["average_gaussian"]=average_gaussian_list
     df["difference_laplace_supression"]=difference_laplace_list
     df["difference_gaussian_supression"]=difference_gaussian_list
-    df.to_csv(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "MoS", index=False)
+    df.to_csv(new_file_to_replace, index=False)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
+    df=pd.read_csv(new_file_to_replace)
     header2=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
-    average_df=[[0]*5]
+    element=[[0]*5]
     m_and_M=generate_list_m_M()
     for i in range(len(m_and_M)):
         # print(m_and_M[i])
@@ -187,13 +189,14 @@ def MoS_Laplace_and_Gaussian(file="Age_base.csv", upper=100, lower=0, epsilon=1,
         print("m=", m,)
         print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
-        average=average_df["original average"]
+        average=average_df["original_average"]
         average_difference_laplacian=average_df["difference_laplace_supression"]
         average_difference_gaussian=average_df["difference_gaussian_supression"]
         element.append([m, M, average, average_difference_laplacian, average_difference_gaussian])
+    new_file_to_replace = folder + file + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS_Average.csv"
     new_df=pd.DataFrame(element, columns=header2)
-    new_df.to_csv(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "MoS_Average", index=False)
-    deleted_element_0(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "MoS_Average")
+    new_df.to_csv(new_file_to_replace, index=False)
+    deleted_element_0(new_file_to_replace)
 
 """Compute M with epsilon^S and delta^S for Laplace and Gaussian"""
 def M_Laplace_and_Gaussian_change_of_parameters(path="irishn_train.csv", name_of_newfile="original", column_name="Age", epsilon=1, delta=None, upper=100, lower=0, numberofrepeat: int=500):
@@ -204,13 +207,13 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="irishn_train.csv", name_of
     
     df=pd.read_csv(path)
     sumtotal=df[column_name].sum()
-    average= df[column_name].mean()
+    original_average= df[column_name].mean()
     total_element=df[column_name].size
     if delta==None:
         delta=np.power((1/total_element), 2)
     else:
         delta=delta
-    header=["m", "M", "delta suppression", "epsilon suppression", "average", "average_laplace", "average_gaussian", "difference_laplace", "difference_gaussian"]
+    header=["m", "M", "delta_suppression", "epsilon_suppression", "original_average", "average_laplace", "average_gaussian", "difference_laplace", "difference_gaussian"]
     element=[[0]*9]
     m_and_M=generate_list_m_M()
     for i in range(len(m_and_M)):
@@ -225,24 +228,26 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="irishn_train.csv", name_of
         for iteration in range(numberofrepeat):
             #Laplace
             sumtotal_laplace=sumtotal+Laplace_noise(epsilon1=epsilon_suppression/2, sensitivity=sensitivitySummation(upper, lower))
-            total_element_laplace=total_element +Laplace_noise(epsilon1=epsilon_suppression/2, sensitivity=sensitivity)
+            total_element_laplace=total_element +Laplace_noise(epsilon1=epsilon_suppression/2, sensitivity=1)
             average_laplace=sumtotal_laplace/total_element_laplace
             difference_laplace=np.abs((sumtotal/total_element)-average_laplace)
             #Gaussian
             sumtotal_gaussian=sumtotal+ Gaussian_noise(delta=delta_suppression, epsilon=epsilon_suppression/2, sensitivity=sensitivitySummation(upper, lower)) 
-            total_element_gaussian=total_element + Gaussian_noise(delta=delta_suppression, epsilon=epsilon_suppression/2, sensitivity=sensitivity)
+            total_element_gaussian=total_element + Gaussian_noise(delta=delta_suppression, epsilon=epsilon_suppression/2, sensitivity=1)
             average_gaussian=sumtotal_gaussian/total_element_gaussian
             difference_gaussian=np.abs((sumtotal/total_element)-average_gaussian)
 
-            element.append([m, M, delta_suppression, epsilon_suppression, average, average_laplace, average_gaussian, difference_laplace, difference_gaussian])
+            element.append([m, M, delta_suppression, epsilon_suppression, original_average, average_laplace, average_gaussian, difference_laplace, difference_gaussian])
     new_df=pd.DataFrame(element, columns=header)
-    new_df.to_csv(path_of_file +"\\" + name_of_newfile + column_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta.csv", index=False)
-    deleted_element_0(path_of_file +"\\" + name_of_newfile + column_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta.csv")
+    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
+    new_df.to_csv(new_file_to_replace, index=False)
+    deleted_element_0(new_file_to_replace)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
     header2=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
-    average_df=[[0]*5]
+    newelement=[[0]*5]
     m_and_M=generate_list_m_M()
+    df=pd.read_csv(new_file_to_replace)
     for i in range(len(m_and_M)):
         # print(m_and_M[i])
         m=m_and_M[i][0]
@@ -250,13 +255,15 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="irishn_train.csv", name_of
         print("m=", m,)
         print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
-        average=average_df["original average"]
-        average_difference_laplacian=average_df["difference_laplace_supression"]
-        average_difference_gaussian=average_df["difference_gaussian_supression"]
-        element.append([m, M, average, average_difference_laplacian, average_difference_gaussian])
-    new_df=pd.DataFrame(element, columns=header2)
-    new_df.to_csv(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta_Average", index=False)
-    deleted_element_0(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta_Average")
+        average=average_df["original_average"]
+        average_difference_laplacian=average_df["difference_laplace"]
+        average_difference_gaussian=average_df["difference_gaussian"]
+        newelement.append([m, M, original_average, average_difference_laplacian, average_difference_gaussian])
+    new_df=pd.DataFrame(newelement, columns=header2)
+    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
+    new_df.to_csv(new_file_to_replace, index=False)
+    deleted_element_0(new_file_to_replace)
+
 
 """Compute M with epsilon and delta for Laplace and Gaussian"""
 def M_Laplace_and_Gaussian(path="irishn_train.csv", name_of_newfile="original", column_name="Age", epsilon=1, delta=None, upper=100, lower=0, numberofrepeat: int=500):
@@ -267,13 +274,13 @@ def M_Laplace_and_Gaussian(path="irishn_train.csv", name_of_newfile="original", 
     
     df=pd.read_csv(path)
     sumtotal=df[column_name].sum()
-    average= df[column_name].mean()
+    original_average= df[column_name].mean()
     total_element=df[column_name].size
     if delta==None:
         delta=np.power((1/total_element), 2)
     else:
         delta=delta
-    header=["m", "M", "delta suppression", "epsilon suppression", "average", "average_laplace", "average_gaussian", "difference_laplace", "difference_gaussian"]
+    header=["m", "M", "delta_suppression", "epsilon_suppression", "original_average", "average_laplace", "average_gaussian", "difference_laplace", "difference_gaussian"]
     element=[[0]*9]
     m_and_M=generate_list_m_M()
     for i in range(len(m_and_M)):
@@ -286,24 +293,26 @@ def M_Laplace_and_Gaussian(path="irishn_train.csv", name_of_newfile="original", 
         for iteration in range(numberofrepeat):
             #Laplace
             sumtotal_laplace=sumtotal+Laplace_noise(epsilon1=epsilon/2, sensitivity=sensitivitySummation(upper, lower))
-            total_element_laplace=total_element +Laplace_noise(epsilon1=epsilon/2, sensitivity=sensitivity)
+            total_element_laplace=total_element +Laplace_noise(epsilon1=epsilon/2, sensitivity=1)
             average_laplace=sumtotal_laplace/total_element_laplace
             difference_laplace=np.abs((sumtotal/total_element)-average_laplace)
             #Gaussian
             sumtotal_gaussian=sumtotal+ Gaussian_noise(delta=delta, epsilon=epsilon/2, sensitivity=sensitivitySummation(upper, lower)) 
-            total_element_gaussian=total_element + Gaussian_noise(delta=delta, epsilon=epsilon/2, sensitivity=sensitivity)
+            total_element_gaussian=total_element + Gaussian_noise(delta=delta, epsilon=epsilon/2, sensitivity=1)
             average_gaussian=sumtotal_gaussian/total_element_gaussian
             difference_gaussian=np.abs((sumtotal/total_element)-average_gaussian)
 
-            element.append([m, M, delta, epsilon, average, average_laplace, average_gaussian, difference_laplace, difference_gaussian])
+            element.append([m, M, delta, epsilon, original_average, average_laplace, average_gaussian, difference_laplace, difference_gaussian])
     new_df=pd.DataFrame(element, columns=header)
-    new_df.to_csv(path_of_file +"\\" + name_of_newfile + column_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "M.csv", index=False)
-    deleted_element_0(path_of_file +"\\" + name_of_newfile + column_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "M.csv")
+    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
+    new_df.to_csv(new_file_to_replace, index=False)
+    deleted_element_0(new_file_to_replace)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
     header2=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
-    average_df=[[0]*5]
+    newelement=[[0]*5]
     m_and_M=generate_list_m_M()
+    df=pd.read_csv(new_file_to_replace)
     for i in range(len(m_and_M)):
         # print(m_and_M[i])
         m=m_and_M[i][0]
@@ -311,20 +320,21 @@ def M_Laplace_and_Gaussian(path="irishn_train.csv", name_of_newfile="original", 
         print("m=", m,)
         print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
-        average=average_df["original average"]
-        average_difference_laplacian=average_df["difference_laplace_supression"]
-        average_difference_gaussian=average_df["difference_gaussian_supression"]
-        element.append([m, M, average, average_difference_laplacian, average_difference_gaussian])
-    new_df=pd.DataFrame(element, columns=header2)
-    new_df.to_csv(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "M_Average", index=False)
-    deleted_element_0(folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "M_Average")
+        average=average_df["original_average"]
+        average_difference_laplacian=average_df["difference_laplace"]
+        average_difference_gaussian=average_df["difference_gaussian"]
+        newelement.append([m, M, original_average, average_difference_laplacian, average_difference_gaussian])
+    new_df=pd.DataFrame(newelement, columns=header2)
+    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
+    new_df.to_csv(new_file_to_replace, index=False)
+    deleted_element_0(new_file_to_replace)
 
     
 def combining_averages(path_average_supression="File_graphic\\AverageAge.csv", path_average_suppression="File_graphic\\originalAge suppression.csv",
                        file="File_graphic\\CombiningAge.csv"):
     average_supression=pd.read_csv(path_average_supression)
     average_suppression=pd.read_csv(path_average_suppression)
-    header=["m", "M", "delta suppression", "epsilon suppression", "average", "metric_laplacian", "metric_gaussian"]
+    header=["m", "M", "delta_suppression", "epsilon_suppression", "original_average", "metric_laplacian", "metric_gaussian"]
     element=[[0]*7]
     
     m_and_M=generate_list_m_M()
@@ -338,7 +348,7 @@ def combining_averages(path_average_supression="File_graphic\\AverageAge.csv", p
         ave_suppression=average_suppression[(average_suppression["m"]==m) & (average_suppression["M"]==M)]
         metric_laplacian=ave_suppression["difference_laplace"] - ave_supre["difference_laplace_supression"]
         metric_gaussian= ave_suppression["difference_gaussian"]- ave_supre["difference_gaussian_supression"]
-        element.append([m, M, float(ave_suppression["delta suppression"]), float(ave_suppression["epsilon suppression"]), float(ave_suppression["average"]) , float(metric_laplacian), float(metric_gaussian)])
+        element.append([m, M, float(ave_suppression["delta_suppression"]), float(ave_suppression["epsilon_suppression"]), float(ave_suppression["average"]) , float(metric_laplacian), float(metric_gaussian)])
     new_df=pd.DataFrame(element, columns=header)
     new_df.to_csv(file, index=False)
     deleted_element_0(file)
@@ -366,7 +376,7 @@ def generate_supression_df(path_m_M: str="Files m and M\\Age\\", original_datase
     return df
 
 """Compute MoS for Laplace and Gaussian, but changing the parameters epsilon and delta for epsilon^S and delta^S"""
-def aggregateLaplaceandGaussiansuppression(file: str="Age_onlysupression.csv", upper=100, lower=0, epsilon: float=1,delta=None):
+def aggregateLaplaceandGaussiansuppression(file: str="Age_base.csv", upper=100, lower=0, epsilon: float=1,delta=None):
     folder="File_graphic\\"
     df=pd.read_csv(folder + file)
     totalelement=df.shape
@@ -378,7 +388,7 @@ def aggregateLaplaceandGaussiansuppression(file: str="Age_onlysupression.csv", u
         new_df=df.iloc[i]
         sumtotal=new_df["total_sum"]
         total_element=new_df["total_element"]
-        original_average=new_df["original average"]
+        original_average=new_df["original_average"]
 
         if (delta==None):
             delta=np.power((1/totalelement[0]), 2)
@@ -416,14 +426,14 @@ def aggregateLaplaceandGaussiansuppression(file: str="Age_onlysupression.csv", u
     df["average_gaussian"]=average_gaussian_list
     df["difference_laplace_supression"]=difference_laplace_list
     df["difference_gaussian_supression"]=difference_gaussian_list
-    df.to_csv(folder + "Age_onlysupression_Lapl_Gauss_suppression.csv", index=False)
+    df.to_csv(folder + "Age_base_Lapl_Gauss_suppression.csv", index=False)
 
 def calculateAverageofelement(file: str="", File_name: str="File_graphic\\AverageAge.csv"):
     """This function selects all the elements according to M and M and calculates the average of these, example:
        m=0.1 and M=0.1 Laplace_noise average= 42; m=0.1 m=0.1 Laplace_noise average= 42; you get m=0.1 m=0.1 Laplace_noise average= 42.5
        m=0.1 and M=0.2 Gaussian average= 40; m=0.1 m=0.2 Gaussian average= 50; you get m=0.2 m=0.2 Gaussian average= 45"""
     df=pd.read_csv(file)
-    header=["m", "M", "original average", "difference_laplace_supression", "difference_gaussian_supression"]
+    header=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
     element=[[0]*5]
     m_and_M=generate_list_m_M()
     for i in range(len(m_and_M)):
@@ -433,7 +443,7 @@ def calculateAverageofelement(file: str="", File_name: str="File_graphic\\Averag
         print("m=", m,)
         print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
-        average=average_df["original average"]
+        average=average_df["original_average"]
         average_difference_laplacian=average_df["difference_laplace_supression"]
         average_difference_gaussian=average_df["difference_gaussian_supression"]
         element.append([m, M, average, average_difference_laplacian, average_difference_gaussian])
