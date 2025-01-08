@@ -210,7 +210,7 @@ def MoS_Laplace_and_Gaussian(file="Apple_base.csv", upper_weight=140, lower_weig
         difference_realmean_gaussian_supression_volume=np.abs(real_volume-average_gaussian_volume)
         
         average_gaussian_weight_list.append(average_gaussian_weight)
-        difference_gaussian_weight_list.append(difference_laplace_gaussian_weight)
+        difference_gaussian_weight_list.append(difference_gaussian_supression_weight)
         difference_realmean_gaussian_weight_list.append(difference_realmean_gaussian_weight_list)
         average_gaussian_volume_list.append(average_gaussian_volume)
         difference_gaussian_volume_list.append(difference_gaussian_supression_volume)
@@ -227,8 +227,8 @@ def MoS_Laplace_and_Gaussian(file="Apple_base.csv", upper_weight=140, lower_weig
         L2_realvalue_laplace_list.append(L2_realvalue_laplace)
         L2_gaussian_list.append(L2_gaussian)
         L2_realvalue_gaussian_list.append(L2_realvalue_gaussian)
-    file_mod=file.replace(".csv"," ")
-    new_file_to_replace = folder + file_mod + "eps=" + str(epsilon) + " delta=" + str(delta) + " MoS.csv"
+    file_mod=file.replace("_base.csv","")
+    new_file_to_replace = folder + file_mod + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS.csv"
     df["average_laplace_weight"]=average_laplace_weight_list
     df["average_gaussian_weight"]=average_gaussian_weight_list
     df["difference_laplace_weight"]=difference_laplace_weight_list
@@ -256,8 +256,8 @@ def MoS_Laplace_and_Gaussian(file="Apple_base.csv", upper_weight=140, lower_weig
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)        
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average_weight=average_df["original_average_weight"]
         average_volume=average_df["original_average_volume"]
@@ -267,12 +267,12 @@ def MoS_Laplace_and_Gaussian(file="Apple_base.csv", upper_weight=140, lower_weig
         average_L2_realvalue_gaussian=average_df["L2_realvalue_gaussian"]
         element.append([m, M, average_weight, average_volume, average_L2_laplace, average_L2_gaussian, average_L2_realvalue_laplace, average_L2_realvalue_gaussian])
     new_df=pd.DataFrame(element, columns=header2)
-    new_file_to_replace = folder + file + "eps=" + str(epsilon) + "delta=" + str(delta) + "MoS_Average.csv"
+    new_file_to_replace = folder + file_mod + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS_Average.csv"
     new_df.to_csv(new_file_to_replace, index=False)
     deleted_element_0(new_file_to_replace)
 
 """Compute M with epsilon^S and delta^S for Laplace and Gaussian"""
-def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfile="original", fruit_name="Apple", epsilon=1, delta=None, upper_weight=140, lower_weight=60, upper_volume=105, lower_volume=45, numberofrepeat: int=500):
+def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", fruit_name="Apple", epsilon=1, delta=None, upper_weight=140, lower_weight=60, upper_volume=105, lower_volume=45, numberofrepeat: int=500):
     path_of_file="File_graphic"
     if not os.path.exists(path_of_file):
     # If it does not exist, create the folder
@@ -345,7 +345,7 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfi
             
             element.append([m, M, delta, epsilon, average_weight, average_volume, L2_laplace, L2_gaussian, L2_realvalue_laplace, L2_realvalue_gaussian])
     new_df=pd.DataFrame(element, columns=header)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
+    new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
     new_df.to_csv(new_file_to_replace, index=False)
     deleted_element_0(new_file_to_replace)
 
@@ -357,8 +357,8 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfi
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)        
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average_weight=average_df["original_average_weight"]
         average_volume=average_df["original_average_volume"]
@@ -368,12 +368,12 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfi
         average_L2_realvalue_gaussian=average_df["L2_realvalue_gaussian"]
         element.append([m, M, average_weight, average_volume, average_L2_laplace, average_L2_gaussian, average_L2_realvalue_laplace, average_L2_realvalue_gaussian])
     new_df=pd.DataFrame(newelement, columns=header2)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
+    new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
     new_df.to_csv(new_file_to_replace, index=False)
     deleted_element_0(new_file_to_replace)
 
 """Compute M with epsilon and delta for Laplace and Gaussian"""
-def M_Laplace_and_Gaussian(path="fruits.csv", name_of_newfile="original", fruit_name="Apple", epsilon=1, delta=None, upper_weight=140, lower_weight=60, upper_volume=105, lower_volume=45, numberofrepeat: int=500):
+def M_Laplace_and_Gaussian(path="fruits.csv", fruit_name="Apple", epsilon=1, delta=None, upper_weight=140, lower_weight=60, upper_volume=105, lower_volume=45, numberofrepeat: int=500):
     path_of_file="File_graphic"
     if not os.path.exists(path_of_file):
     # If it does not exist, create the folder
@@ -442,8 +442,9 @@ def M_Laplace_and_Gaussian(path="fruits.csv", name_of_newfile="original", fruit_
             
             element.append([m, M, delta, epsilon, average_weight, average_volume, L2_laplace, L2_gaussian, L2_realvalue_laplace, L2_realvalue_gaussian])
     new_df=pd.DataFrame(element, columns=header)
-    new_df.to_csv(path_of_file +"\\" + name_of_newfile + fruit_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta.csv", index=False)
-    deleted_element_0(path_of_file +"\\" + name_of_newfile + fruit_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta.csv")
+    new_file_to_replace = path_of_file +"\\" + fruit_name + "eps=" + str(epsilon) + "delta=" + str(delta) + "MChangeEpsDelta.csv"
+    new_df.to_csv(new_file_to_replace, index=False)
+    deleted_element_0(new_file_to_replace)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
     header2=["m", "M", "original_average_weight","original_average_volume", "L2_laplace", "L2_gaussian","L2_realvalue_laplace","L2_realvalue_gaussian"]
@@ -453,8 +454,8 @@ def M_Laplace_and_Gaussian(path="fruits.csv", name_of_newfile="original", fruit_
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)        
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average_weight=average_df["original_average_weight"]
         average_volume=average_df["original_average_volume"]
@@ -464,7 +465,7 @@ def M_Laplace_and_Gaussian(path="fruits.csv", name_of_newfile="original", fruit_
         average_L2_realvalue_gaussian=average_df["L2_realvalue_gaussian"]
         element.append([m, M, average_weight, average_volume, average_L2_laplace, average_L2_gaussian, average_L2_realvalue_laplace, average_L2_realvalue_gaussian])
     new_df=pd.DataFrame(newelement, columns=header2)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
+    new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
     new_df.to_csv(new_file_to_replace, index=False)
     deleted_element_0(new_file_to_replace)
 
@@ -555,8 +556,8 @@ def calculateAverageofelement(file: str="", File_name: str="File_graphic\\Averag
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)        
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average=average_df["original average"]
         average_difference_laplacian=average_df["difference_laplace_supression"]

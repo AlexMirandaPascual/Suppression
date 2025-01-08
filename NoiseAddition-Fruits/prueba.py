@@ -46,7 +46,7 @@ def generate_files_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
     for i in range(len(m)):
         if m[i] ==m[-1]:
             break
-        print("m[i]= ", m[i] )
+        print("m[i]= ", m[i])
 
         for j in range(length):
             if m[length-j-1]>=m[i]:
@@ -244,7 +244,7 @@ def calculateAverageofelement(file="File_graphic\\Apple_base.csv", File_name="Fi
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
+        print("m=", m)
         print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average_weight=average_df["average weight"]
@@ -285,7 +285,7 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfi
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
+        print("m=", m)
         print("M=", M)
         delta_suppression=calculate_delta_suppression(delta=delta , m=m)
         epsilon_suppression=calculate_eps_suppression(m=m, M=M, eps=epsilon)
