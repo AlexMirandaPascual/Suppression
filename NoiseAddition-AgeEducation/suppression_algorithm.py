@@ -19,7 +19,7 @@ def sensitivitySummation(upper, lower):
     return np.abs(upper - lower)
 
 
-def generate_files_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+def generate_files_m_M(list_m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
                         path_average_distances="Agedistances.csv",
                         path_of_file="Files m and M\\Age\\"):      
     """Generates files of probabilities that a file is not deleted 
@@ -30,61 +30,72 @@ def generate_files_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
     if not os.path.exists(path_of_file):
         os.makedirs(path_of_file)
 
-    length=len(m)
-    for i in range(len(m)):
-        if m[i] ==m[-1]:
-            break
-        #print("m[i]= ", m[i] )
+    m_and_M = generate_list_m_M(list_m)
 
-        for j in range(length):
-            if m[length-j-1]>=m[i]:
-                #print("m[j]= ", m[length-j-1])
-                name_file= path_of_file +"file m=" + str(m[i]) + " M=" + str(m[length-j-1]) + ".csv"
-                generate_probabilities_csv(m=m[i],M=m[length-j-1], path_distances=path_average_distances, path_probabilidades=name_file)
-            else:
-                break
-    name_file= path_of_file +"file m=" + str(m[-1]) + " M=" + str(m[-1]) + ".csv"
-    generate_probabilities_csv(m=m[-1], M=m[-1], path_distances=path_average_distances, path_probabilidades=name_file)
-    for i in range(len(m)):
-        if m[i] ==m[-1]:
-            break
-        #print("m[i]= ", m[i])
+    for i in range(len(m_and_M)):
+        print("m=",m_and_M[i][0]," M=",m_and_M[i][1])
+        name_file= path_of_file +"file m=" + str(m_and_M[i][0]) + " M=" + str(m_and_M[i][1]) + ".csv"
+        generate_probabilities_csv(m=m_and_M[i][0],M=m_and_M[i][1], path_distances=path_average_distances, path_probabilidades=name_file)
 
-        for j in range(length):
-            if m[length-j-1]>=m[i]:
-                #print("m[j]= ", m[length-j-1])
-                name_file= path_of_file +"file m=" + str(m[i]/10) + " M=" + str(m[length-j-1]/10) + ".csv"
-                generate_probabilities_csv(m=m[i]/10,M=m[length-j-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)
-            else:
-                break
-    name_file= path_of_file +"file m=" + str(m[-1]/10) + " M=" + str(m[-1]/10) + ".csv"
-    generate_probabilities_csv(m=m[-1]/10, M=m[-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)        
+    #length=len(m)
+    #for i in range(len(m)):
+    #    if m[i] ==m[-1]:
+    #        break
+    #    #print("m[i]= ", m[i] )
+
+    #    for j in range(length):
+    #        if m[length-j-1]>=m[i]:
+    #            #print("m[j]= ", m[length-j-1])
+    #            name_file= path_of_file +"file m=" + str(m[i]) + " M=" + str(m[length-j-1]) + ".csv"
+    #            generate_probabilities_csv(m=m[i],M=m[length-j-1], path_distances=path_average_distances, path_probabilidades=name_file)
+    #        else:
+    #            break
+    #name_file= path_of_file +"file m=" + str(m[-1]) + " M=" + str(m[-1]) + ".csv"
+    #generate_probabilities_csv(m=m[-1], M=m[-1], path_distances=path_average_distances, path_probabilidades=name_file)
+    #for i in range(len(m)):
+    #    if m[i] ==m[-1]:
+    #        break
+    #    #print("m[i]= ", m[i])
+
+    #    for j in range(length):
+    #        if m[length-j-1]>=m[i]:
+    #            #print("m[j]= ", m[length-j-1])
+    #            name_file= path_of_file +"file m=" + str(m[i]/10) + " M=" + str(m[length-j-1]/10) + ".csv"
+    #            generate_probabilities_csv(m=m[i]/10,M=m[length-j-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)
+    #        else:
+    #            break
+    #name_file= path_of_file +"file m=" + str(m[-1]/10) + " M=" + str(m[-1]/10) + ".csv"
+    #generate_probabilities_csv(m=m[-1]/10, M=m[-1]/10, path_distances=path_average_distances, path_probabilidades=name_file)        
 #End of generate_files_m_M 
 
-def generate_list_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])-> list:
+def generate_list_m_M(list_m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])-> list:
     "generate values of m and M in list"
     m_and_M=[]
-    length=len(m)
-    for i in range(len(m)):
-        if m[i] == m[-1]:
+
+    length=len(list_m)
+    for i in range(length):
+        if list_m[i] == list_m[-1]:
             break
-        #print("m[i]= ", m[i] )
+        #print("list_m[i]= ", list_m[i] )
         for j in range(length):
-            if m[length-j-1]>=m[i]:
-                m_and_M.append([m[i],m[length-j-1]])
+            if list_m[length-j-1]>=list_m[i]:
+                m_and_M.append([list_m[i],list_m[length-j-1]])
             else:
                 break
-    m_and_M.append([m[-1],m[-1]]) #Append m=M=last element of list
-    for i in range(len(m)):
-        if m[i] == m[-1]:
+    m_and_M.append([list_m[-1],list_m[-1]]) #Append m=M=last element of list
+    
+    list_m = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09]
+    length=len(list_m)
+    for i in range(length):
+        if list_m[i] == list_m[-1]:
             break
-        #print("m[i]= ", m[i] )
+        #print("list_m[i]= ", list_m[i] )
         for j in range(length):
-            if m[length-j-1]>=m[i]:
-                m_and_M.append([m[i]/10,m[length-j-1]/10])
+            if list_m[length-j-1]>=list_m[i]:
+                m_and_M.append([list_m[i],list_m[length-j-1]])
             else:
                 break
-    m_and_M.append([m[-1]/10,m[-1]/10]) #Append m=M=last element of list
+    m_and_M.append([list_m[-1],list_m[-1]]) #Append m=M=last element of list
     return m_and_M
 
 def suppressed_dataset(probabilities, dataset, column_name):
@@ -102,18 +113,18 @@ def suppressed_dataset(probabilities, dataset, column_name):
             new_dataset.append(element[i])
     return new_dataset
 
-def generate_iterations_suppressed_database(path_m_M="Files m and M\\Age\\", original_dataset_path="irishn_train.csv", column_name="Age", numberofrepeat: int=500):
+def generate_iterations_suppressed_database(output_file_name="File_graphic\\Age_base.csv", path_m_M="Files m and M\\Age\\", original_dataset_path="irishn_train.csv", column_name="Age", numberofrepeat: int=500):
     """Generate a file containing the base statistics the of datasets with supression, repeated a number of times"""
     list_element=os.listdir(path_m_M)
     header=[ "m", "M","original_average", "supressed_database_average", "supressed_database_sum", "supressed_database_number_of_elements"]
     element=[[0]*6]
     original_dataset=pd.read_csv(original_dataset_path)
     original_average=float(original_dataset[column_name].mean())
-    folder="File_graphic\\"
+    #folder="File_graphic\\"
 
     # If folder does not exist, create the folder
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    #if not os.path.exists(folder):
+    #    os.makedirs(folder)
 
     for k in range(numberofrepeat):
         for i in range(len(list_element)):
@@ -126,15 +137,17 @@ def generate_iterations_suppressed_database(path_m_M="Files m and M\\Age\\", ori
             supressed_database_number_of_elements=data.size
             supressed_database_average=supressed_database_sum/supressed_database_number_of_elements
 
-            element.append([ m, M, original_average, supressed_database_average, supressed_database_sum, supressed_database_number_of_elements])  
+            element.append([m, M, original_average, supressed_database_average, supressed_database_sum, supressed_database_number_of_elements])  
     df=pd.DataFrame(element, columns=header)
-    df.to_csv(folder + column_name +"_base.csv", index=False)
-    deleted_element_0(folder + column_name +"_base.csv")
+    df.to_csv(output_file_name, index=False)
+    deleted_element_0(output_file_name)
+    #df.to_csv(folder + column_name +"_base.csv", index=False)
+    #deleted_element_0(folder + column_name +"_base.csv")
 
 """Compute MoS for Laplace and Gaussian"""
-def MoS_Laplace_and_Gaussian(file="Age_base.csv", upper=100, lower=0, epsilon=1, delta=None):
-    folder="File_graphic\\"
-    df=pd.read_csv(folder + file)
+def MoS_Laplace_and_Gaussian(output_file_name="File_graphic\\Age_eps=1_delta=SQR_MoS.csv", file="File_graphic\\Age_base.csv", upper=100, lower=0, epsilon=1, delta=None):
+    #folder="File_graphic\\"
+    df=pd.read_csv(file)
     totalelement=df.shape
     average_laplace_list=[]
     average_gaussian_list=[]
@@ -169,16 +182,16 @@ def MoS_Laplace_and_Gaussian(file="Age_base.csv", upper=100, lower=0, epsilon=1,
         average_gaussian_list.append(average_gaussian)
         difference_gaussian_list.append(difference_gaussian_supression)
 
-    file_mod=file.replace(".csv"," ")
-    new_file_to_replace = folder + file_mod + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS.csv"
+    #file_mod=file.replace("_base.csv","")
+    #new_file_to_replace = folder + file_mod + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS.csv"
     df["average_laplace"]=average_laplace_list
     df["average_gaussian"]=average_gaussian_list
     df["difference_laplace_supression"]=difference_laplace_list
     df["difference_gaussian_supression"]=difference_gaussian_list
-    df.to_csv(new_file_to_replace, index=False)
+    df.to_csv(output_file_name, index=False)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
-    df=pd.read_csv(new_file_to_replace)
+    df=pd.read_csv(output_file_name)
     header2=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
     element=[[0]*5]
     m_and_M=generate_list_m_M()
@@ -186,24 +199,25 @@ def MoS_Laplace_and_Gaussian(file="Age_base.csv", upper=100, lower=0, epsilon=1,
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average=average_df["original_average"]
-        average_difference_laplacian=average_df["difference_laplace_supression"]
+        average_difference_laplace=average_df["difference_laplace_supression"]
         average_difference_gaussian=average_df["difference_gaussian_supression"]
-        element.append([m, M, average, average_difference_laplacian, average_difference_gaussian])
-    new_file_to_replace = folder + file + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS_Average.csv"
+        element.append([m, M, average, average_difference_laplace, average_difference_gaussian])
+    output_file_name_average = output_file_name.replace(".csv","_Average.csv")
+    #new_file_to_replace = folder + file_mod + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MoS_Average.csv"
     new_df=pd.DataFrame(element, columns=header2)
-    new_df.to_csv(new_file_to_replace, index=False)
-    deleted_element_0(new_file_to_replace)
+    new_df.to_csv(output_file_name_average, index=False)
+    deleted_element_0(output_file_name_average)
 
 """Compute M with epsilon^S and delta^S for Laplace and Gaussian"""
-def M_Laplace_and_Gaussian_change_of_parameters(path="irishn_train.csv", name_of_newfile="original", column_name="Age", epsilon=1, delta=None, upper=100, lower=0, numberofrepeat: int=500):
-    path_of_file="File_graphic"
-    if not os.path.exists(path_of_file):
-    # If it does not exist, create the folder
-        os.makedirs(path_of_file)
+def M_Laplace_and_Gaussian_change_of_parameters(output_file_name="File_graphic\\Age_eps=1_delta=SQR_MChangeEpsDelta.csv", path="irishn_train.csv", column_name="Age", epsilon=1, delta=None, upper=100, lower=0, numberofrepeat: int=500):
+    #path_of_file="File_graphic"
+    #if not os.path.exists(path_of_file):
+    ## If it does not exist, create the folder
+    #    os.makedirs(path_of_file)
     
     df=pd.read_csv(path)
     sumtotal=df[column_name].sum()
@@ -239,38 +253,41 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="irishn_train.csv", name_of
 
             element.append([m, M, delta_suppression, epsilon_suppression, original_average, average_laplace, average_gaussian, difference_laplace, difference_gaussian])
     new_df=pd.DataFrame(element, columns=header)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
-    new_df.to_csv(new_file_to_replace, index=False)
-    deleted_element_0(new_file_to_replace)
+    #new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
+    new_df.to_csv(output_file_name, index=False)
+    deleted_element_0(output_file_name)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
-    header2=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
-    newelement=[[0]*5]
+    header2=["m", "M", "delta_suppression", "epsilon_suppression", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
+    newelement=[[0]*7]
     m_and_M=generate_list_m_M()
-    df=pd.read_csv(new_file_to_replace)
+    df=pd.read_csv(output_file_name)
     for i in range(len(m_and_M)):
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
+        print("m=", m)
         print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
+        delta_suppression=average_df["delta_suppression"]
+        epsilon_suppression=average_df["epsilon_suppression"]
         average=average_df["original_average"]
-        average_difference_laplacian=average_df["difference_laplace"]
+        average_difference_laplace=average_df["difference_laplace"]
         average_difference_gaussian=average_df["difference_gaussian"]
-        newelement.append([m, M, original_average, average_difference_laplacian, average_difference_gaussian])
+        newelement.append([m, M, delta_suppression, epsilon_suppression, original_average, average_difference_laplace, average_difference_gaussian])
+    output_file_name_average = output_file_name.replace(".csv","_Average.csv")
+    #new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
     new_df=pd.DataFrame(newelement, columns=header2)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
-    new_df.to_csv(new_file_to_replace, index=False)
-    deleted_element_0(new_file_to_replace)
+    new_df.to_csv(output_file_name_average, index=False)
+    deleted_element_0(output_file_name_average)
 
 
 """Compute M with epsilon and delta for Laplace and Gaussian"""
-def M_Laplace_and_Gaussian(path="irishn_train.csv", name_of_newfile="original", column_name="Age", epsilon=1, delta=None, upper=100, lower=0, numberofrepeat: int=500):
-    path_of_file="File_graphic"
-    if not os.path.exists(path_of_file):
-    # If it does not exist, create the folder
-        os.makedirs(path_of_file)
+def M_Laplace_and_Gaussian(output_file_name="File_graphic\\Age_eps=1_delta=SQR_M.csv",path="irishn_train.csv", column_name="Age", epsilon=1, delta=None, upper=100, lower=0, numberofrepeat: int=500):
+    #path_of_file="File_graphic"
+    #if not os.path.exists(path_of_file):
+    ## If it does not exist, create the folder
+    #    os.makedirs(path_of_file)
     
     df=pd.read_csv(path)
     sumtotal=df[column_name].sum()
@@ -304,38 +321,41 @@ def M_Laplace_and_Gaussian(path="irishn_train.csv", name_of_newfile="original", 
 
             element.append([m, M, delta, epsilon, original_average, average_laplace, average_gaussian, difference_laplace, difference_gaussian])
     new_df=pd.DataFrame(element, columns=header)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta.csv"
-    new_df.to_csv(new_file_to_replace, index=False)
-    deleted_element_0(new_file_to_replace)
+    #new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_M.csv"
+    new_df.to_csv(output_file_name, index=False)
+    deleted_element_0(output_file_name)
 
     """Now we group every entry with the same pair (m,M) and compute its average"""
     header2=["m", "M", "original_average", "difference_laplace_supression", "difference_gaussian_supression"]
     newelement=[[0]*5]
     m_and_M=generate_list_m_M()
-    df=pd.read_csv(new_file_to_replace)
+    df=pd.read_csv(output_file_name)
     for i in range(len(m_and_M)):
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average=average_df["original_average"]
-        average_difference_laplacian=average_df["difference_laplace"]
+        average_difference_laplace=average_df["difference_laplace"]
         average_difference_gaussian=average_df["difference_gaussian"]
-        newelement.append([m, M, original_average, average_difference_laplacian, average_difference_gaussian])
+        newelement.append([m, M, original_average, average_difference_laplace, average_difference_gaussian])
+    output_file_name_average = output_file_name.replace(".csv","_Average.csv")
+    #new_file_to_replace=path_of_file +"\\" + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_M_Average.csv"
     new_df=pd.DataFrame(newelement, columns=header2)
-    new_file_to_replace=path_of_file +"\\" + name_of_newfile + column_name + "_eps=" + str(epsilon) + "_delta=" + str(delta) + "_MChangeEpsDelta_Average.csv"
-    new_df.to_csv(new_file_to_replace, index=False)
-    deleted_element_0(new_file_to_replace)
+    new_df.to_csv(output_file_name_average, index=False)
+    deleted_element_0(output_file_name_average)
 
-    
-def combining_averages(path_average_supression="File_graphic\\AverageAge.csv", path_average_suppression="File_graphic\\originalAge suppression.csv",
-                       file="File_graphic\\CombiningAge.csv"):
-    average_supression=pd.read_csv(path_average_supression)
-    average_suppression=pd.read_csv(path_average_suppression)
-    header=["m", "M", "delta_suppression", "epsilon_suppression", "original_average", "metric_laplacian", "metric_gaussian"]
-    element=[[0]*7]
+def DifferenceBetweenMetrics(path_MoS_Average="File_graphic\\Age_eps=1_delta=SQR_MoS_Average.csv", 
+                        path_MChangeEpsDelta_Average="File_graphic\\Age_eps=1_delta=SQR_MChangeEpsDelta.csv",
+                        path_M_Average="File_graphic\\Age_eps=1_delta=SQR_MChangeEpsDelta.csv",
+                       output_file_name="File_graphic\\Age_eps=1_delta=SQR_combined.csv"):
+    df_MoS=pd.read_csv(path_MoS_Average)
+    df_MChangeEpsDelta=pd.read_csv(path_MChangeEpsDelta_Average)
+    df_M=pd.read_csv(path_M_Average)
+    header=["m", "M", "delta_suppression", "epsilon_suppression", "difference_laplace_M_minus_MoS", "difference_gaussian_M_minus_MoS", "difference_laplace_MChangeEpsDelta_minus_MoS", "difference_gaussian_MChangeEpsDelta_minus_MoS"]
+    element=[[0]*8]
     
     m_and_M=generate_list_m_M()
     for i in range(len(m_and_M)):
@@ -344,14 +364,20 @@ def combining_averages(path_average_supression="File_graphic\\AverageAge.csv", p
         M=m_and_M[i][1]
         print("m=", m)
         print("M=", M)
-        ave_supre=average_supression[(average_supression["m"]==m) & (average_supression["M"]==M)]
-        ave_suppression=average_suppression[(average_suppression["m"]==m) & (average_suppression["M"]==M)]
-        metric_laplacian=ave_suppression["difference_laplace"] - ave_supre["difference_laplace_supression"]
-        metric_gaussian= ave_suppression["difference_gaussian"]- ave_supre["difference_gaussian_supression"]
-        element.append([m, M, float(ave_suppression["delta_suppression"]), float(ave_suppression["epsilon_suppression"]), float(ave_suppression["average"]) , float(metric_laplacian), float(metric_gaussian)])
+        df_MoS_instance=df_MoS[(df_MoS["m"]==m) & (df_MoS["M"]==M)]
+        df_MChangeEpsDelta_instance=df_MChangeEpsDelta[(df_MChangeEpsDelta["m"]==m) & (df_MChangeEpsDelta["M"]==M)]
+        df_M_instance=df_M[(df_M["m"]==m) & (df_M["M"]==M)]
+        difference_laplace_M_minus_MoS = df_M_instance["difference_laplace_supression"] - df_MoS_instance["difference_laplace_supression"]
+        difference_gaussian_M_minus_MoS = df_M_instance["difference_gaussian_supression"] - df_MoS_instance["difference_gaussian_supression"]
+        difference_laplace_MChangeEpsDelta_minus_MoS = df_MChangeEpsDelta_instance["difference_laplace_supression"] - df_MoS_instance["difference_laplace_supression"]
+        difference_gaussian_MChangeEpsDelta_minus_MoS = df_MChangeEpsDelta_instance["difference_gaussian_supression"] - df_MoS_instance["difference_gaussian_supression"]
+        element.append([m, M, float(df_MChangeEpsDelta_instance["delta_suppression"]), float(df_MChangeEpsDelta_instance["epsilon_suppression"]), float(difference_laplace_M_minus_MoS), float(difference_gaussian_M_minus_MoS), float(difference_laplace_MChangeEpsDelta_minus_MoS), float(difference_gaussian_MChangeEpsDelta_minus_MoS)])
     new_df=pd.DataFrame(element, columns=header)
-    new_df.to_csv(file, index=False)
-    deleted_element_0(file)
+    new_df.to_csv(output_file_name, index=False)
+    deleted_element_0(output_file_name)
+
+
+
 
 
 ###Obsolete functions
@@ -440,13 +466,13 @@ def calculateAverageofelement(file: str="", File_name: str="File_graphic\\Averag
         # print(m_and_M[i])
         m=m_and_M[i][0]
         M=m_and_M[i][1]
-        print("m=", m,)
-        print("M=", M)
+        #print("m=", m)
+        #print("M=", M)
         average_df=df[(df["m"]==m) & (df["M"]==M)].mean()
         average=average_df["original_average"]
-        average_difference_laplacian=average_df["difference_laplace_supression"]
+        average_difference_laplace=average_df["difference_laplace_supression"]
         average_difference_gaussian=average_df["difference_gaussian_supression"]
-        element.append([m, M, average, average_difference_laplacian, average_difference_gaussian])
+        element.append([m, M, average, average_difference_laplace, average_difference_gaussian])
     new_df=pd.DataFrame(element, columns=header)
     new_df.to_csv(File_name, index=False)
     deleted_element_0(File_name)

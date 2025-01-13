@@ -316,7 +316,7 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfi
     new_df.to_csv(path_of_file +"\\" + name_of_newfile + fruit_name +" suppression.csv", index=False)
     deleted_element_0(path_of_file +"\\" + name_of_newfile + fruit_name +" suppression.csv")
     
-def combining_averages(path_average_supression="File_graphic\\AverageApple.csv", path_average_suppression="File_graphic\\originalApple suppression.csv",
+def DifferenceBetweenMetrics(path_average_supression="File_graphic\\AverageApple.csv", path_average_suppression="File_graphic\\originalApple suppression.csv",
                        file="File_graphic\\CombiningApple.csv", real_weight=100, real_volume=80):
     average_supression=pd.read_csv(path_average_supression)
     average_suppression=pd.read_csv(path_average_suppression)

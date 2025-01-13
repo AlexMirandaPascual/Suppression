@@ -46,7 +46,7 @@ def calculate_L1(m: float, M: float, eps: float)-> float:
         D10=np.power(b1,2)-3*a1*c1
         D11= (2*np.power(b1,3)) - (9*a1*b1*c1) + (27*np.power(a1, 2)* d1)
         R1=np.sqrt(np.power(D10, 3))
-       #Opciones D1
+       #Options D1
         case=np.power(D11, 2)-4*np.power(D10, 3)
         if case>=0:
             cubic_pos=(D11 + np.sqrt(case))/2
@@ -121,7 +121,7 @@ def calculate_eps_suppression(m: float, M: float, eps: float)-> float:
 #     D11= (2*np.power(b1,3)) - (9*a1*b1*c1) + (27*np.power(a1, 2)* d1)
 #     R1=np.sqrt(np.power(D10, 3))
   
-#     #Opciones D1
+#     #Options D1
 #     np.power(D11, 2)-4*np.power(D10, 3)
 
 #     #para L2
