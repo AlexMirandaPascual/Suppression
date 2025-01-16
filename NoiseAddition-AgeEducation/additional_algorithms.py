@@ -1,6 +1,7 @@
 
 import numpy as np
 import pandas as pd
+import scipy
 import os
 import re
 
@@ -16,7 +17,7 @@ def deleted_element_0(path):
     df.to_csv(path, index=False)
 
 
-def generate_probabilities_csv(m, M, path_distances, path_probabilidades):
+def generate_probabilities_csv(m, M, path_distances, path_probabilities):
     df=pd.read_csv(path_distances)
     name= "probabilities m=" + str(m)+ " M=" +str(M)
     df.columns=[name]
@@ -24,7 +25,7 @@ def generate_probabilities_csv(m, M, path_distances, path_probabilidades):
     average_distance=df.iloc[:, 0]
     p=m+(M-m)*average_distance
     probability_of_being_sampled=1-p
-    probability_of_being_sampled.to_csv(path_probabilidades, index=False)
+    probability_of_being_sampled.to_csv(path_probabilities, index=False)
 
 
 # extract_m_and_M_List(path: str ):
@@ -33,11 +34,14 @@ def calculate_delta_suppression(delta, m):
     delta_suppression=delta*(1-m)
     return delta_suppression
 
+def calculate_delta_suppression_inverse(delta, m):
+    return delta/(1-m)
+
 def calculate_L1(m: float, M: float, eps: float)-> float:
+    F=np.exp(eps)
     if eps==0:
          V1=((1-m)/(M-m))-np.sqrt(M*m*(1-m)*(1-M))/(M*(M-m))
     else:
-        F=np.exp(eps)
         a1=(F-1) * (M/m) * (np.power((M-m), 2))
         b1=-((M-m)/m) * ((np.power(m,2)-4*M*m +2*M)*(F-1) + F*M)
         c1= ((1-m)/m)* ( (F-1) * (2* np.power(m, 2)-4*M*m-m) + (3*F-1)*M )
@@ -61,10 +65,10 @@ def calculate_L1(m: float, M: float, eps: float)-> float:
     return L1  
 
 def calculate_L2(m: float, M: float, eps: float)-> float:
+    F=np.exp(eps)
     if eps==0:
         V2= 2-(np.sqrt(m*(1-M)))/(1-M)
     else:
-        F=np.exp(eps)
         a2 = (F-(F-1)*m)/m
         b2 = -(6*F-(F-1)*(M+5*m))/m
         c2 = (1/(m*(1-M))) * (m*((F-1)*(m+9*M-9)-F)+4*M*((F-1)*M-4*F+1)+12*F)
@@ -98,6 +102,21 @@ def calculate_eps_suppression(m: float, M: float, eps: float)-> float:
         L3=calculate_L3(m, M, eps)
         eps_suppression=np.amax([L1, L2, L3])
         return eps_suppression
+
+def calculate_eps_suppression_inverse(m: float, M:float, eps:float):
+    if eps<calculate_eps_suppression(m,M,0):
+        return float("nan")
+
+    def epsilon_inverse(theta):
+        if theta[0]<0:
+            return 100
+        return np.abs(calculate_eps_suppression(m,M,theta[0])-eps)
+    
+    minimize_output = scipy.optimize.minimize(epsilon_inverse, x0 = eps, tol=1E-6)
+    #print(minimize_output)
+    return minimize_output['x'][0]
+
+
 # def calcL2(m: float, M: float, eps: float)-> float:
 #         F=np.exp(eps)
 #         a2 = (F-(F-1)*m)/m

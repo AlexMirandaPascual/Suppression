@@ -33,7 +33,7 @@ def sensitivitySummation(upper, lower):
  
 def generate_files_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
                         path_average_distances="Appledistances.csv",
-                        path_of_file="Files m and M\\Apple\\"):      
+                        path_of_file=os.path.join("Files m and M","Apple")):      
     """Generates files of probabilities that a file is not deleted 
     with combinations of m and M where m 
     is combined with all elements in a valid way"""
@@ -52,11 +52,11 @@ def generate_files_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
             if m[length-j-1]>=m[i]:
                 print("m[j]= ", m[length-j-1])
                 name_file= path_of_file +"file m=" + str(m[i]) + " M=" + str(m[length-j-1]) + ".csv"
-                generate_probabilities_csv(m=m[i],M=m[length-j-1], path_distances=path_average_distances, path_probabilidades=name_file)
+                generate_probabilities_csv(m=m[i],M=m[length-j-1], path_distances=path_average_distances, path_probabilities=name_file)
             else:
                 break
     name_file= path_of_file +"file m=" + str(m[-1]) + " M=" + str(m[-1]) + ".csv"
-    generate_probabilities_csv(m=m[-1], M=m[-1], path_distances=path_average_distances, path_probabilidades=name_file)        
+    generate_probabilities_csv(m=m[-1], M=m[-1], path_distances=path_average_distances, path_probabilities=name_file)        
 #End of generate_files_m_M 
 
 def generate_list_m_M(m: list=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]):
@@ -96,8 +96,8 @@ or not each element, probabilities and dataset must be dataframe"""
     return df_new_dataset
 
 
-def generate_iterations_suppressed_database(path_m_M="Files m and M\\Apple\\", original_dataset_path="fruits.csv", fruit_name="Apple", numberofrepeat: int=1):
-    """Generate a file containing the base of element of datasets with supression"""
+def generate_iterations_suppressed_database(path_m_M=os.path.join("Files m and M","Apple"), original_dataset_path="fruits.csv", fruit_name="Apple", numberofrepeat: int=1):
+    """Generate a file containing the base of element of datasets with suppression"""
     list_element=os.listdir(path_m_M)
     header=["average weight", "total_sum weight", "average volume", "total_sum volume", "total_element", "m", "M"]
     element=[[0]*7]
@@ -110,13 +110,13 @@ def generate_iterations_suppressed_database(path_m_M="Files m and M\\Apple\\", o
 
     for k in range(numberofrepeat):
         for i in range(len(list_element)):
-            data=suppressed_dataset(probabilities=path_m_M + list_element[i], dataset=original_dataset_path, fruit_name=fruit_name)
+            data=suppressed_dataset(probabilities=os.path.join(path_m_M,list_element[i]), dataset=original_dataset_path, fruit_name=fruit_name)
             total_sum_weight=data["Weight"].sum()
             total_sum_volume=data["Volume"].sum()
             total_element=data.shape
             average_weight=total_sum_weight/total_element[0]
             average_volume=total_sum_volume/total_element[0]
-            m, M=extract_m_and_Monefile(path_m_M + list_element[i])
+            m, M=extract_m_and_Monefile(os.path.join(path_m_M,list_element[i]))
             element.append([average_weight , total_sum_weight, average_volume, total_sum_volume,  total_element[0], m, M])  
     df=pd.DataFrame(element, columns=header)
     df.to_csv(folder + fruit_name +"_base.csv", index=False)
@@ -173,8 +173,8 @@ def MoS_Laplace_and_Gaussian(file="Apple_base.csv", upper_weight=140, lower_weig
     df["average_gaussian weight"]=average_gaussian_weight_list
     df["average_laplace volume"]=average_laplacian_volume_list
     df["average_gaussian volume"]=average_gaussian_volume_list
-    df["L2_laplacian_supression"]=L2_laplacian_list
-    df["L2_gaussian_supression"]=L2_gaussian_list
+    df["L2_laplacian_suppression"]=L2_laplacian_list
+    df["L2_gaussian_suppression"]=L2_gaussian_list
     df.to_csv(folder + file, index=False)
 
 
@@ -232,12 +232,12 @@ def aggregateLaplaceandGaussiansuppression(file="Apple_base.csv", upper_weight=1
     file.replace(".csv", "")
     df.to_csv(folder + file + "_Lapl_Gauss_suppression.csv", index=False)
     
-def calculateAverageofelement(file="File_graphic\\Apple_base.csv", File_name="File_graphic\\AverageApple.csv"):
+def calculateAverageofelement(file=os.path.join("File_graphic","Apple_base.csv"), File_name="File_graphic\\AverageApple.csv"):
     """This function selects all the elements according to M and M and calculates the average of these, example:
        m=0.1 and M=0.1 Laplace_noise average= 42; m=0.1 m=0.1 Laplace_noise average= 42; you get m=0.1 m=0.1 Laplace_noise average= 42.5
        m=0.1 and M=0.2 Gaussian average= 40; m=0.1 m=0.2 Gaussian average= 50; you get m=0.2 m=0.2 Gaussian average= 45"""
     df=pd.read_csv(file)
-    header=["m", "M", "average weight", "average_laplace weight","average_gaussian weight", "average volume", "average_laplace volume","average_gaussian volume", "average_L2_laplacian_supression", "average_L2_gaussian_supression"]
+    header=["m", "M", "average weight", "average_laplace weight","average_gaussian weight", "average volume", "average_laplace volume","average_gaussian volume", "average_L2_laplacian_suppression", "average_L2_gaussian_suppression"]
     element=[[0]*10]
     m_and_M=generate_list_m_M()
     for i in range(len(m_and_M)):
@@ -253,9 +253,9 @@ def calculateAverageofelement(file="File_graphic\\Apple_base.csv", File_name="Fi
         average_volume=average_df["average volume"]
         average_laplacian_volume=average_df["average_laplace volume"]
         average_gaussian_volume=average_df["average_gaussian volume"]
-        average_L2_laplacian_supression=average_df["L2_laplacian_supression"]
-        average_L2_gaussian_supression=average_df["L2_gaussian_supression"]
-        element.append([m, M, average_weight, average_laplacian_weight, average_gaussian_weight, average_volume, average_laplacian_volume, average_gaussian_volume, average_L2_laplacian_supression, average_L2_gaussian_supression])
+        average_L2_laplacian_suppression=average_df["L2_laplacian_suppression"]
+        average_L2_gaussian_suppression=average_df["L2_gaussian_suppression"]
+        element.append([m, M, average_weight, average_laplacian_weight, average_gaussian_weight, average_volume, average_laplacian_volume, average_gaussian_volume, average_L2_laplacian_suppression, average_L2_gaussian_suppression])
     new_df=pd.DataFrame(element, columns=header)
     new_df.to_csv(File_name, index=False)
     deleted_element_0(File_name)
@@ -316,9 +316,9 @@ def M_Laplace_and_Gaussian_change_of_parameters(path="fruits.csv", name_of_newfi
     new_df.to_csv(path_of_file +"\\" + name_of_newfile + fruit_name +" suppression.csv", index=False)
     deleted_element_0(path_of_file +"\\" + name_of_newfile + fruit_name +" suppression.csv")
     
-def DifferenceBetweenMetrics(path_average_supression="File_graphic\\AverageApple.csv", path_average_suppression="File_graphic\\originalApple suppression.csv",
+def DifferenceBetweenMetrics(path_average_suppression="File_graphic\\AverageApple.csv", path_average_suppression="File_graphic\\originalApple suppression.csv",
                        file="File_graphic\\CombiningApple.csv", real_weight=100, real_volume=80):
-    average_supression=pd.read_csv(path_average_supression)
+    average_suppression=pd.read_csv(path_average_suppression)
     average_suppression=pd.read_csv(path_average_suppression)
     header=["m", "M", "delta_suppression", "epsilon_suppression", "real_weight", "real_volume", "metric_laplacian", "metric_gaussian"]
     element=[[0]*8]
@@ -330,10 +330,10 @@ def DifferenceBetweenMetrics(path_average_supression="File_graphic\\AverageApple
         M=m_and_M[i][1]
         print("m=", m)
         print("M=", M)
-        ave_supre=average_supression[(average_supression["m"]==m) & (average_supression["M"]==M)]
+        ave_supre=average_suppression[(average_suppression["m"]==m) & (average_suppression["M"]==M)]
         ave_suppression=average_suppression[(average_suppression["m"]==m) & (average_suppression["M"]==M)]
-        metric_laplacian=ave_suppression["L2_laplacian_suppression"]-ave_supre["average_L2_laplacian_supression"]
-        metric_gaussian=ave_suppression["L2_gaussian_suppression"]-ave_supre["average_L2_gaussian_supression"]
+        metric_laplacian=ave_suppression["L2_laplacian_suppression"]-ave_supre["average_L2_laplacian_suppression"]
+        metric_gaussian=ave_suppression["L2_gaussian_suppression"]-ave_supre["average_L2_gaussian_suppression"]
         element.append([m, M, float(ave_suppression["delta_suppression"]), float(ave_suppression["epsilon_suppression"]), float(real_weight), float(real_volume), float(metric_laplacian), float(metric_gaussian)])
     new_df=pd.DataFrame(element, columns=header)
     new_df.to_csv(file, index=False)

@@ -1,18 +1,9 @@
 
 import numpy as np
 import pandas as pd
+import scipy
 import os
 import re
-
-
-def extract_m_and_MofPath(path): 
-    numbers=[]
-    for i in range(len(path)):
-        for j in re.findall(r"-?\d+\.?\d*", path[i]):
-            numbers.append(float(j))
-    half_total_element=int(len(numbers)/2)
-    m_and_M=np.reshape(numbers, (half_total_element,-1))
-    return m_and_M
 
 def extract_m_and_Monefile(path):
     numbers=re.findall(r"-?\d+\.?\d*", path)
@@ -25,24 +16,8 @@ def deleted_element_0(path):
     df=df[df.iloc[:, 1]!=0]
     df.to_csv(path, index=False)
 
-def deleted_element0_of_path(path):
-    list_dir=os.listdir(path)
-    for i in range(len(list_dir)):
-        path_file=path + "\\" + list_dir[i]
-        deleted_element_0(path_file)
 
-def join_csv_of_carpet(path_of_carpet, path_of_archive):
-    list_dir=os.listdir(path_of_carpet)
-    df_probe=pd.read_csv(path_of_carpet + "\\" + list_dir[0])
-    list_columns=list(df_probe.columns)
-    df=pd.DataFrame(columns=list_columns)
-    for i in range(len(list_dir)):
-        df1=pd.read_csv(path_of_carpet + "\\" + list_dir[i])
-        df=pd.concat([df, df1])
-    df.to_csv(path_of_archive, index=None)
-
-
-def generate_probabilities_csv(m, M, path_distances, path_probabilidades):
+def generate_probabilities_csv(m, M, path_distances, path_probabilities):
     df=pd.read_csv(path_distances)
     name= "probabilities m=" + str(m)+ " M=" +str(M)
     df.columns=[name]
@@ -50,9 +25,7 @@ def generate_probabilities_csv(m, M, path_distances, path_probabilidades):
     average_distance=df.iloc[:, 0]
     p=m+(M-m)*average_distance
     probability_of_being_sampled=1-p
-    probability_of_being_sampled.to_csv(path_probabilidades, index=False)
-
-
+    probability_of_being_sampled.to_csv(path_probabilities, index=False)
 
 
 # extract_m_and_M_List(path: str ):
@@ -61,11 +34,14 @@ def calculate_delta_suppression(delta, m):
     delta_suppression=delta*(1-m)
     return delta_suppression
 
+def calculate_delta_suppression_inverse(delta, m):
+    return delta/(1-m)
+
 def calculate_L1(m: float, M: float, eps: float)-> float:
+    F=np.exp(eps)
     if eps==0:
          V1=((1-m)/(M-m))-np.sqrt(M*m*(1-m)*(1-M))/(M*(M-m))
     else:
-        F=np.exp(eps)
         a1=(F-1) * (M/m) * (np.power((M-m), 2))
         b1=-((M-m)/m) * ((np.power(m,2)-4*M*m +2*M)*(F-1) + F*M)
         c1= ((1-m)/m)* ( (F-1) * (2* np.power(m, 2)-4*M*m-m) + (3*F-1)*M )
@@ -89,10 +65,10 @@ def calculate_L1(m: float, M: float, eps: float)-> float:
     return L1  
 
 def calculate_L2(m: float, M: float, eps: float)-> float:
+    F=np.exp(eps)
     if eps==0:
         V2= 2-(np.sqrt(m*(1-M)))/(1-M)
     else:
-        F=np.exp(eps)
         a2 = (F-(F-1)*m)/m
         b2 = -(6*F-(F-1)*(M+5*m))/m
         c2 = (1/(m*(1-M))) * (m*((F-1)*(m+9*M-9)-F)+4*M*((F-1)*M-4*F+1)+12*F)
@@ -126,6 +102,21 @@ def calculate_eps_suppression(m: float, M: float, eps: float)-> float:
         L3=calculate_L3(m, M, eps)
         eps_suppression=np.amax([L1, L2, L3])
         return eps_suppression
+
+def calculate_eps_suppression_inverse(m: float, M:float, eps:float):
+    if eps<calculate_eps_suppression(m,M,0):
+        return float("nan")
+
+    def epsilon_inverse(theta):
+        if theta[0]<0:
+            return 100
+        return np.abs(calculate_eps_suppression(m,M,theta[0])-eps)
+    
+    minimize_output = scipy.optimize.minimize(epsilon_inverse, x0 = eps, tol=1E-6)
+    #print(minimize_output)
+    return minimize_output['x'][0]
+
+
 # def calcL2(m: float, M: float, eps: float)-> float:
 #         F=np.exp(eps)
 #         a2 = (F-(F-1)*m)/m
@@ -159,3 +150,31 @@ def calculate_eps_suppression(m: float, M: float, eps: float)-> float:
 # archivo="Files m and M\\file m=0.1 M=0.2.csv"
 # numeros=extract_m_and_Monefile(archivo)
 # print(numeros[1])
+
+##Obsolete
+
+def extract_m_and_MofPath(path): 
+    numbers=[]
+    for i in range(len(path)):
+        for j in re.findall(r"-?\d+\.?\d*", path[i]):
+            numbers.append(float(j))
+    half_total_element=int(len(numbers)/2)
+    m_and_M=np.reshape(numbers, (half_total_element,-1))
+    return m_and_M
+
+def deleted_element0_of_path(path):
+    list_dir=os.listdir(path)
+    for i in range(len(list_dir)):
+        path_file=path + "\\" + list_dir[i]
+        deleted_element_0(path_file)
+
+def join_csv_of_carpet(path_of_carpet, path_of_archive):
+    "This function joins all the CSVs in a folder into one, to make it easier to get your work done with pandas"
+    list_dir=os.listdir(path_of_carpet)
+    df_probe=pd.read_csv(path_of_carpet + "\\" + list_dir[0])
+    list_columns=list(df_probe.columns)
+    df=pd.DataFrame(columns=list_columns)
+    for i in range(len(list_dir)):
+        df1=pd.read_csv(path_of_carpet + "\\" + list_dir[i])
+        df=pd.concat([df, df1])
+    df.to_csv(path_of_archive, index=None)

@@ -65,55 +65,64 @@ import pandas as pd
     # return QAtX,QAmt,nQAtQ
 
 
+
+    
+
 def pandasMDAVwMSE(path_of_data: str, column_name: str, k: int, Change_value_for_the_centroid=True):
     df=pd.read_csv(path_of_data)
     # Normalize the data
     principal=(df[column_name]-df[column_name].mean())/df[column_name].std()
     df_list=[]
-    
+
     while principal.shape[0]>=2*k:   
-        centroid=principal.mean()
+        centroide=principal.mean()
         # xr
-        xr_df=(principal-centroid)**2
-        list_min_xr=xr_df.sort_values()
-        xr=list_min_xr.iloc[0]
-        xr_kminus1=list_min_xr.iloc[k]
-        xr_cluster=list_min_xr.iloc[0:k]
-        index_xr=xr_cluster.index
-        #xs
-        xs=list_min_xr.iloc[-1]
-        xs_cluster= list_min_xr.iloc[-k: 0] ##Aquí creo que está mal. El mecanismo hace el clustering de los k puntos más cercanos al punto más alejado del centroide, no los k puntos más alejados del centroide
-        index_xs=xs_cluster.index
-        #Eliminate xr and xs registers 
-        principal=principal.drop(index=index_xr)
-        principal=principal.drop(index=index_xs)
+        xr_df=(principal-centroide)**2
+        xr=xr_df.max()
+        xr_list=(principal-xr)**2
+        list_near_xr=xr_list.sort_values()
+        xr_k_near=list_near_xr.iloc[0:k]
+        index_xr=xr_k_near.index
+        xr_cluster=principal.loc[index_xr]
+        # Agregate the cluster xr
         df_list.append(xr_cluster)
+        #Remove samples already aggregated
+        principal=principal.drop(index=index_xr)
+        #xs
+        xs=list_near_xr.iloc[-1]
+        xs_list= (principal-xs)**2
+        list_near_xs=xs_list.sort_values()
+        xs_k_near=list_near_xs.iloc[0:k]
+        index_xs=xs_k_near.index
+        xs_cluster=principal.loc[index_xs]
+        # Agregate the cluster xr
         df_list.append(xs_cluster)
+        #Remove samples already aggregated
+        principal=principal.drop(index=index_xs)
+
     if (principal.shape[0]>=k) and (principal.shape[0]<=2*k-1):
         df_list.append(principal)
-    if principal.shape[0]<k:
-        last_cluster=pd.DataFrame(df_list[-1])
-        beforelast_cluster=pd.DataFrame(df_list[-2])
-        
-        lc=last_cluster.iloc[0]
-        blc=beforelast_cluster.iloc[-1]
-    
-        last_cluster_dist=(principal-lc)**2
-        beforelast_cluster_dist=(principal-blc)**2
 
-        indexlast_cluster=last_cluster_dist.index.tolist()
-        indexbeforelast_cluster_dist=beforelast_cluster_dist.index.tolist()
-        # print((last_cluster_dist<beforelast_cluster_dist).index.tolist())
-        for i in range(principal.shape[0]):
-            # b=abs(principal.iloc[i] -lc)
-            # print("b ", b)
-            if (last_cluster_dist.iat[i] <= beforelast_cluster_dist.iat[i]):
-                a=pd.DataFrame(data=principal.iat[i], index=indexlast_cluster[i])
-                last_cluster=pd.concat([last_cluster, a])
-            elif(last_cluster_dist.iat[i] > beforelast_cluster_dist.iat[i]):
-                b=pd.DataFrame(data=principal.iat[i], index=indexbeforelast_cluster_dist[i])
-                beforelast_cluster=pd.concat([beforelast_cluster, b])
-                ##Pregunta: Esto salva el cluster en el vector df_list?
+    if principal.shape[0]<k:
+       mean_list=[]
+       index_principal=principal.index.to_list()
+      #Calculate the mean of each cluster and create a list of mean values for each cluster
+       for i in range(len(df_list)):
+            #Calculate the mean of each cluster
+            mean_df=df_list[i].mean()
+            #Create a list of mean values for each cluster
+            mean_list.append(mean_df)
+
+       for i in range(principal.shape[0]):
+            mean_df=pd.DataFrame(mean_list)
+            #Find the distance of the cluster mean
+            mean_prov=(mean_df-principal.iat[i])**2
+            #index of the min distance
+            index=mean_prov.idxmin(numeric_only=True)
+            df_prov=df_list[index.iloc[0]]
+            df_prov[index_principal[i]]=principal.iat[i]
+            df_list[index.iloc[0]]=df_prov
+
     #Change value for the centroid (the cluster mean) if True
     if (Change_value_for_the_centroid==True):
         for i in range(len(df_list)):
@@ -124,7 +133,10 @@ def pandasMDAVwMSE(path_of_data: str, column_name: str, k: int, Change_value_for
         return df_list
     else:
         return df_list
-    
+
+
+
+
 def Convertlist_to_dataframe(listofdataframe: list, sort_index=False):
     df_mod=pd.DataFrame(listofdataframe[0])
     for i in range(1, len(listofdataframe)):

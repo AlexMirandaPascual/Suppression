@@ -4,9 +4,14 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from  suppression_algorithm import *
 
-def generate3DmetricAverages2D(plot_path_start="Plots\\Age_eps=1_delta=SQR", path="File_graphic\\Age_eps=1_delta=SQR_combined.csv", epsilon=1, EpsDeltaChange=False, gaussian=False, smallsuppression=False):
+def generate3DmetricAverages2D(plot_path_start=os.path.join("Plots","Age_eps=1_delta=SQR"), path=os.path.join("File_graphic","Age_eps=1_delta=SQR_combined.csv"), plot_values="difference_laplace_M_minus_MoS", epsilon=1, smallsuppression=False, relative_error=True):
     df_all = pd.read_csv(path)
     Points=[]
+
+    if relative_error==True:
+        average = df_all["original_average"].iloc[0]
+    else:
+        average = 1 ##Absolute value: corresponds to dividing by 1
 
     if smallsuppression==False:
         df = df_all[df_all["m"]>=0.1]
@@ -15,52 +20,54 @@ def generate3DmetricAverages2D(plot_path_start="Plots\\Age_eps=1_delta=SQR", pat
         df = df_all[df_all["m"]<0.1]
         file_name_end = "_1--9.pdf"
 
-    if EpsDeltaChange==False:
-        if gaussian==False:
-            m=df["m"]
-            M=df["M"]
-            x=m
-            y=M
-            z=df["difference_laplace_M_minus_MoS"]
-            file_name_middle="_difference_laplace_M_minus_MoS"
-            for i in range(df.shape[0]):
-                Points.append([x.iloc[i],y.iloc[i],z.iloc[i]])
-        else:
-            m=df["m"]
-            M=df["M"]
-            x=m
-            y=M
-            z=df["difference_gaussian_M_minus_MoS"]
-            file_name_middle = "_difference_gaussian_M_minus_MoS"
-            for i in range(df.shape[0]):
-                Points.append([x.iloc[i],y.iloc[i],z.iloc[i]])
-    else:
-        if gaussian==False:
-            m=df["m"]
-            M=df["M"]
-            x=m
-            y=M
-            z=df["difference_laplace_MChangeEpsDelta_minus_MoS"]
-            file_name_middle = "_difference_laplace_MChangeEpsDelta_minus_MoS"
-            for i in range(df.shape[0]):
-                Points.append([x.iloc[i],y.iloc[i],z.iloc[i]])
-        else:
-            df_gaussian=df[df["epsilon_suppression"]<2]
-            m=df_gaussian["m"]
-            M=df_gaussian["M"]
-            x=m
-            y=M
-            z=df_gaussian["difference_gaussian_MChangeEpsDelta_minus_MoS"]
-            file_name_middle = "_difference_gaussian_MChangeEpsDelta_minus_MoS"
-            for i in range(df_gaussian.shape[0]):
-                Points.append([x.iloc[i],y.iloc[i],z.iloc[i]])
+    plot_df = df.filter(["m","M",plot_values],axis=1)
+
+    ##Delete all rows with an NaN value
+    plot_df.dropna(inplace=True)
+
+    x = plot_df["m"]
+    y = plot_df["M"]
+    z = plot_df[plot_values]/average*100
+    for i in range(plot_df.shape[0]):
+        Points.append([x.iloc[i],y.iloc[i],z.iloc[i]])
+
+    file_name_middle = "_"+plot_values
+    
+    if(plot_values=="difference_laplace_M_minus_MoS"):
+        title = "PE difference of the Laplace mechanism"
+        epsilon_text_M = "$\\mathcal{M}$ is $"+str(epsilon)+"$-DP"
+        epsilon_text_MoS = "$\\mathcal{M}\\circ\\mathcal{S}$ is $(\\varepsilon^{\\mathcal{S}}("+str(epsilon)+",m,M))$-DP"
+    elif(plot_values=="difference_gaussian_M_minus_MoS"):
+        title = "PE difference of the Gaussian mechanism"
+        epsilon_text_M = "$\\mathcal{M}$ is $("+str(epsilon)+",\\delta)$-DP"
+        epsilon_text_MoS = "$\\mathcal{M}\\circ\\mathcal{S}$ is $(\\varepsilon^{\\mathcal{S}}("+str(epsilon)+",m,M),\\delta^{\\mathcal{S}})$-DP"
+    elif(plot_values=="difference_laplace_M_minus_MoSChangeEpsDelta"):
+        title = "PE difference of the Laplace mechanism" 
+        epsilon_text_M = "$\\mathcal{M}$ is $"+str(epsilon)+"$-DP"
+        epsilon_text_MoS = "$\\mathcal{M}\\circ\\mathcal{S}$ is $"+str(epsilon)+"$-DP"  
+    elif(plot_values=="difference_gaussian_M_minus_MoSChangeEpsDelta"):
+        title = "PE difference of the Gaussian mechanism"
+        epsilon_text_M = "$\\mathcal{M}$ is $("+str(epsilon)+",\\delta)$-DP"
+        epsilon_text_MoS = "$\\mathcal{M}\\circ\\mathcal{S}$ is $("+str(epsilon)+",\\delta)$-DP"  
+    elif(plot_values=="difference_laplace_MChangeEpsDelta_minus_MoS"):
+        title = "PE difference of the Laplace mechanism"
+        epsilon_text_M = "$\\mathcal{M}$ is $(\\varepsilon^{\\mathcal{S}}("+str(epsilon)+",m,M))$-DP"
+        epsilon_text_MoS = "$\\mathcal{M}\\circ\\mathcal{S}$ is $(\\varepsilon^{\\mathcal{S}}("+str(epsilon)+",m,M))$-DP"   
+    elif(plot_values=="difference_gaussian_MChangeEpsDelta_minus_MoS"):
+        title = "PE difference of the Gaussian mechanism"
+        epsilon_text_M = "$\\mathcal{M}$ is $(\\varepsilon^{\\mathcal{S}}("+str(epsilon)+",m,M),\\delta^{\\mathcal{S}})$-DP"
+        epsilon_text_MoS = "$\\mathcal{M}\\circ\\mathcal{S}$ is $(\\varepsilon^{\\mathcal{S}}("+str(epsilon)+",m,M),\\delta^{\\mathcal{S}})$-DP" 
+
+    if len(x)<3:
+        print("Plot "+ title + " for epsilon=" + str(epsilon) +" cannot be generated as there are less than three support values")
+        return 0
 
     fig, ax = plt.subplots()
     graph=ax.tricontourf(x, y, z, levels=30, cmap="turbo", antialiased=True)
     fig.colorbar(graph)
     # ax.plot3D(x, y, z, 'green')
     ax.set(xlabel='m', ylabel='M')
-    ax.set_title("m vs M vs "+ file_name_middle)
+    ax.set_title(title)
     
     if smallsuppression==False:
         ax.set_xlim([0, 1])
@@ -86,15 +93,24 @@ def generate3DmetricAverages2D(plot_path_start="Plots\\Age_eps=1_delta=SQR", pat
         #plt.text(Points[i][0],Points[i][1],np.format_float_scientific(float(Points[i][2]), precision=1, exp_digits=1),fontsize=7,ha="middle",va="center")
         plt.text(Points[i][0],Points[i][1],np.format_float_positional(float(Points[i][2]), precision=4),fontsize=7,ha="center",va="center")
 
+    if smallsuppression==False:
+        plt.text(0.65,0.3,epsilon_text_M,ha="center",va="center")
+        plt.text(0.65,0.2,epsilon_text_MoS,ha="center",va="center")
+    else:
+        plt.text(0.065,0.03,epsilon_text_M,ha="center",va="center")
+        plt.text(0.065,0.02,epsilon_text_MoS,ha="center",va="center")
+
     plt.savefig(plot_path_start+file_name_middle+file_name_end)
+
+    plt.close()
 
 
 
 ###To Change
 
 
-def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_supression="File_graphic\\Age_base 1repeat.csv", column_name="Age"):
-    df = pd.read_csv(path_with_supression)
+def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_suppression="File_graphic\\Age_base 1repeat.csv", column_name="Age"):
+    df = pd.read_csv(path_with_suppression)
     file_original = pd.read_csv(original_path)
     average_original=file_original[column_name].mean()
     m=df["m"]
@@ -110,14 +126,14 @@ def generate3DoriginalvsSuprresion(original_path="irishn_train.csv", path_with_s
     ax.plot_trisurf(x, y, z, cmap="turbo", linewidth=0.2, antialiased=True)
     # ax.plot3D(x, y, z, 'green')
     ax.set(xlabel='m', ylabel='M', zlabel="accuracy_difference")
-    ax.set_title("m vs M vs (average algoritm_suppresion " +str(column_name) + "- average " + str(column_name))
+    ax.set_title("m vs M vs (average algorithm_suppression " +str(column_name) + "- average " + str(column_name))
     ax.set_xlim([0.1, 0.9])
     ax.set_ylim([0.1, 0.9])
     # ax.set_box_aspect((3,3,4))
     plt.show()
 
-def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", path_with_supression="File_graphic\\AverageAge.csv", column_name="Age", column_average="average_laplace", epsilon=1, upper=100, lower=0):
-    df = pd.read_csv(path_with_supression)
+def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", path_with_suppression="File_graphic\\AverageAge.csv", column_name="Age", column_average="average_laplace", epsilon=1, upper=100, lower=0):
+    df = pd.read_csv(path_with_suppression)
     file_original = pd.read_csv(original_path)
     
     #File original "irishn_train" 
@@ -154,7 +170,7 @@ def generate3DoriginalvsSuprresionAverages(original_path="irishn_train.csv", pat
     ax.plot_trisurf(x, y, z, cmap="turbo", linewidth=0.2, antialiased=True)
     # ax.plot3D(x, y, z, 'green')
     ax.set(xlabel='m', ylabel='M', zlabel="accuracy_difference")
-    ax.set_title("m vs M vs (" + column_average + " algoritm_suppresion " +str(column_name) + "- " + str(column_average)+ " "+ str(column_name))
+    ax.set_title("m vs M vs (" + column_average + " algorithm_suppression " +str(column_name) + "- " + str(column_average)+ " "+ str(column_name))
     ax.set_xlim([0.1, 0.9])
     ax.set_ylim([0.1, 0.9])
     # ax.set_box_aspect((3,3,4))
